@@ -20,4 +20,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
     }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        ChooseRole chooseRole = new ChooseRole();
+        chooseRole.Show();
+        this.Close();
+    }
 }

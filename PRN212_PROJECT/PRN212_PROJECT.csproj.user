@@ -1,4 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
+  <ItemGroup>
+    <Compile Update="ChooseRole.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Customer.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="KitchenEmploy.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Login.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="OrderEmploy.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="RateOrder.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Register.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Shipper.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Staff.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>
