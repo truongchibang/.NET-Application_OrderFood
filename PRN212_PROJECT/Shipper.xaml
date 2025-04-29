@@ -1,0 +1,155 @@
+﻿<Window x:Class="PRN212_PROJECT.Shipper"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PRN212_PROJECT"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Shipper" Height="450" Width="800">
+    <Grid>
+        <DockPanel>
+            <Button Content="Logout" Click="Button_Click"
+        DockPanel.Dock="Bottom"
+        Height="30"
+        Margin="10"
+        HorizontalAlignment="Right"
+        Width="100"/>
+
+
+            <TabControl TabStripPlacement="Left"
+            Margin="10">
+                <TabControl.Resources>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Background" Value="Blue"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Padding" Value="10,5"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="Green"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TabControl.Resources>
+
+                <TabItem Header="Thông tin NV">
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Tên:" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Name="NameTextBox" Margin="5"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Email:" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Name="EmailTextBox" Margin="5"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Số điện thoại:" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Name="PhoneNumberTextBox" Margin="5"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Mật khẩu:" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Name="PasswordTextBox" Margin="5"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Địa chỉ:" Margin="5" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Name="AddressTextBox" Margin="5"/>
+                        <Button Grid.Row="5" Grid.Column="1" Content="Cập nhật" Width="100" HorizontalAlignment="Left" Margin="443,5,0,0" Click="UpdateProfile_Click" Height="20" VerticalAlignment="Top"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Nhận ship đơn">
+                    <Grid Margin="10">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl Name="OrderList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="10">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="180"/>
+                                                    <ColumnDefinition Width="180"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="80"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="{Binding Path=OrderId, StringFormat='Mã đơn: {0}'}" FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=AccountId, StringFormat='Khách hàng: {0}'}"/>
+                                                    <TextBlock Text="{Binding Path=TimeOder, StringFormat='Thời gian: {0:dd/MM/yyyy HH:mm}'}"/>
+                                                </StackPanel>
+
+                                                <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1">
+                                                    <ItemsControl ItemsSource="{Binding Food_orders}">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="{Binding FoodName}" Margin="0,0,10,0"/>
+                                                                    <TextBlock Text="{Binding Quantity, StringFormat='x{0}'}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </ScrollViewer>
+                                                <TextBlock Grid.Column="2" Text="{Binding Total, StringFormat='Tổng: {0:N0} VNĐ'}" VerticalAlignment="Center"/>
+
+                                                <Button Grid.Column="3" Content="Nhận đơn" Click="AcceptOrder_Click" Tag="{Binding OrderId}" Width="60" Margin="5"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Báo đã đến điểm giao">
+                    <Grid Margin="10">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl Name="OrderFinish">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="10">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="180"/>
+                                                    <ColumnDefinition Width="180"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="80"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="{Binding Path=OrderId, StringFormat='Mã đơn: {0}'}" FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=AccountId, StringFormat='Khách hàng: {0}'}"/>
+                                                    <TextBlock Text="{Binding Path=TimeOder, StringFormat='Thời gian: {0:dd/MM/yyyy HH:mm}'}"/>
+                                                </StackPanel>
+
+                                                <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1">
+                                                    <ItemsControl ItemsSource="{Binding Food_orders}">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="{Binding FoodName}" Margin="0,0,10,0"/>
+                                                                    <TextBlock Text="{Binding Quantity, StringFormat='x{0}'}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </ScrollViewer>
+                                                <TextBlock Grid.Column="2" Text="{Binding Total, StringFormat='Tổng: {0:N0} VNĐ'}" VerticalAlignment="Center"/>
+
+                                                <Button Grid.Column="3" Content="Đã đến điểm nhận hàng" Click="OrderFinish_Click" Tag="{Binding OrderId}" Width="60" Margin="5"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </Grid>
+</Window>
