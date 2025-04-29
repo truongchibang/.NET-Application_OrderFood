@@ -52,27 +52,19 @@ public partial class Prn212ProjectBl5Context : DbContext
     {
         modelBuilder.Entity<AccRole>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Acc_Role");
 
-            entity.Property(e => e.AccountId)
-                .HasMaxLength(15)
-                .HasColumnName("account_id");
+            entity.HasKey(e => new { e.AccountId });
+            entity.ToTable("Acc_Role");
+                        entity.Property(e => e.AccountId)
+                            .HasMaxLength(15)
+                            .HasColumnName("account_id");
             entity.Property(e => e.Address).HasColumnName("address");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
 
-            entity.HasOne(d => d.Account).WithMany()
-                .HasForeignKey(d => d.AccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Acc_Role_Account");
+            entity.HasOne(d => d.Account).WithMany().HasForeignKey(d => d.AccountId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_Acc_Role_Account");
 
-            entity.HasOne(d => d.Role).WithMany()
-                .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Acc_Role_Role");
+            entity.HasOne(d => d.Role).WithMany().HasForeignKey(d => d.RoleId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_Acc_Role_Role");
         });
-
         modelBuilder.Entity<Account>(entity =>
         {
             entity.HasKey(e => e.PhoneNumber);

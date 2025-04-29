@@ -93,16 +93,14 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="3*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="ID:" Margin="5"/>
-                                <TextBox Grid.Row="0" Grid.Column="1" Name="IdTextBox" Margin="5" IsReadOnly="True"/>
                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Tên:" Margin="5"/>
-                                <TextBox Grid.Row="1" Grid.Column="1" Name="NameTextBox" Margin="5" IsReadOnly="True"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Name="NameTextBox" Margin="5" />
                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Email:" Margin="5"/>
-                                <TextBox Grid.Row="2" Grid.Column="1" Name="EmailTextBox" Margin="5" IsReadOnly="True"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Name="EmailTextBox" Margin="5" />
                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Số điện thoại:" Margin="5"/>
-                                <TextBox Grid.Row="3" Grid.Column="1" Name="PhoneNumberTextBox" Margin="5" IsReadOnly="True"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Name="PhoneNumberTextBox" Margin="5"/>
                                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Địa chỉ:" Margin="5"/>
-                                <TextBox Grid.Row="4" Grid.Column="1" Name="AddressTextBox" Margin="5" IsReadOnly="True"/>
+                                <TextBox Grid.Row="4" Grid.Column="1" Name="AddressTextBox" Margin="5"/>
                                 <TextBlock Grid.Row="5" Grid.Column="0" Text="Vai trò:" Margin="5"/>
                                 <ComboBox Grid.Row="5" Grid.Column="1" Name="RoleUpdateComboBox" Margin="5" DisplayMemberPath="RoleName"/>
                             </Grid>
@@ -122,6 +120,96 @@
                                     </Grid.RowDefinitions>
                                     <Button Content="Xóa" Width="100" Margin="5" Click="DeleteEmployee_Click" Grid.Row="0"/>
                                     <Button Content="Reset" Width="100" Margin="5" Click="ResetFields_Click" Grid.Row="1"/>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Quản lý thực phẩm">
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,10">
+                            <ComboBox Name="FoodTypeFilterComboBox" Width="150" Margin="5" SelectionChanged="FoodTypeFilterComboBox_SelectionChanged"/>
+                            <TextBox Name="FoodSearchBox" Width="172" Margin="5" TextChanged="FoodSearchBox_TextChanged" ToolTip="Tìm kiếm theo tên"/>
+                        </StackPanel>
+                        <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl Name="FoodItemsControl">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="5">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Image Grid.Column="0" Source="{Binding Image}" Width="50" Height="50" Margin="0,0,10,0"/>
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="{Binding FoodName}" FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding TypeFood.TypeName, StringFormat='Loại: {0}'}"/>
+                                                    <TextBlock Text="{Binding Price, StringFormat='Giá: {0:N0} VND'}"/>
+                                                </StackPanel>
+                                                <Button Grid.Column="2" Content="Chọn" Tag="{Binding FoodId}" Click="SelectFood_Click" Margin="10,0,0,0"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="10,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Thông tin thực phẩm" FontWeight="Bold" Margin="0,0,0,10"/>
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="3*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="ID:" Margin="5"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Name="FoodIdTextBox" Margin="5" IsReadOnly="True"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Tên:" Margin="5"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Name="FoodNameTextBox" Margin="5"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Loại:" Margin="5"/>
+                                <ComboBox Grid.Row="2" Grid.Column="1" Name="FoodTypeComboBox" Margin="5" DisplayMemberPath="TypeName"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Giá:" Margin="5"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Name="FoodPriceTextBox" Margin="5"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Hình ảnh:" Margin="5"/>
+                                <TextBox Grid.Row="4" Grid.Column="1" Name="FoodImageTextBox" Margin="5"/>
+                            </Grid>
+
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Button Content="Thêm" Width="100" Margin="5" Click="AddFood_Click" Grid.Row="0"/>
+                                    <Button Content="Cập nhật" Width="100" Margin="5" Click="UpdateFood_Click" Grid.Row="1"/>
+                                </Grid>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Button Content="Xóa" Width="100" Margin="5" Click="DeleteFood_Click" Grid.Row="0"/>
+                                    <Button Content="Reset" Width="100" Margin="5" Click="ResetFoodFields_Click" Grid.Row="1"/>
                                 </Grid>
                             </StackPanel>
                         </Grid>
@@ -151,7 +239,7 @@
                         <TextBox Grid.Row="3" Grid.Column="1" Name="PasswordTextBox" Margin="5"/>
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Địa chỉ:" Margin="5" VerticalAlignment="Center"/>
                         <TextBox Grid.Row="4" Grid.Column="1" Name="AddressBox" Margin="5"/>
-                        <Button Grid.Row="5" Grid.Column="1" Content="Cập nhật" Width="100" HorizontalAlignment="Left" Margin="443,5,0,0" Click="UpdateProfile_Click" Height="20" VerticalAlignment="Top"/>
+                        <Button Grid.Row="5" Grid.Column="1" Content="Cập nhật" Width="100" HorizontalAlignment="Left" Margin="382,14,0,0" Click="UpdateProfile_Click" Height="20" VerticalAlignment="Top"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Báo cáo">

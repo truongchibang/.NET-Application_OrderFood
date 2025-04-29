@@ -141,6 +141,7 @@ namespace PRN212_PROJECT
                         context.SaveChanges();
                         LoadOrders();
                         MessageBox.Show("Đã nhận đơn hàng!");
+                        LoadOrdersFinish();
                     }
                 }
             }

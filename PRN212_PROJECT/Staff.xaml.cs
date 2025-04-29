@@ -26,12 +26,15 @@ namespace PRN212_PROJECT
         private List<Order> allOrder;
         string originalPhoneNumber;
         private List<Account> allAccounts;
+        private List<TypeFood> allFoodTypes;
+        private List<Food> allFoods;
         public Staff(Account account)
         {
             InitializeComponent();
             CurrentAccount = account;
             LoadProfile();
             LoadOrders();
+            LoadFood();
             LoadData();
             LoadEmployeeData();
         }
@@ -80,7 +83,7 @@ namespace PRN212_PROJECT
                 var statuses = context.Statuses.ToList();
 
 
-                var allStatus= new Status
+                var allStatus = new Status
                 {
                     StatusId = -1,
                     Name = "Hiển thị tất cả"
@@ -123,7 +126,7 @@ namespace PRN212_PROJECT
                 if (!string.IsNullOrWhiteSpace(searchText))
                 {
                     filtered = filtered.Where(x => x.Account.Name != null &&
-                                                   x.Account.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
+                                                   x.Account.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
                                                    x.Account.PhoneNumber != null &&
                                                    x.Account.PhoneNumber.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 }
@@ -205,7 +208,7 @@ namespace PRN212_PROJECT
                 RoleUpdateComboBox.DisplayMemberPath = "RoleDefine";
                 RoleUpdateComboBox.SelectedValuePath = "RoleId";
 
-                
+
                 var roleAccounts = context.AccRoles
                     .Where(a => a.RoleId == 3 || a.RoleId == 4 || a.RoleId == 5)
                     .Select(a => a.AccountId)
@@ -224,7 +227,7 @@ namespace PRN212_PROJECT
             var selectedRole = RoleComboBox.SelectedItem as Role;
             var searchText = SearchBox.Text?.ToLower() ?? "";
             var filtered = allAccounts.AsEnumerable();
-            if(selectedRole.RoleId == -1)
+            if (selectedRole != null && selectedRole.RoleId == -1)
             {
                 var context = new Prn212ProjectBl5Context();
                 var roleAccounts = context.AccRoles
@@ -278,18 +281,17 @@ namespace PRN212_PROJECT
                     var account = context.Accounts
                         .FirstOrDefault(a => a.PhoneNumber == accountId);
                     var role = context.AccRoles
-                        .FirstOrDefault(a => a.AccountId == accountId); 
+                        .FirstOrDefault(a => a.AccountId == accountId);
 
                     if (account != null && role != null)
                     {
-                        IdTextBox.Text = account.PhoneNumber;
                         NameTextBox.Text = account.Name;
                         EmailTextBox.Text = account.Email;
                         PhoneNumberTextBox.Text = account.PhoneNumber;
                         AddressTextBox.Text = role.Address ?? "";
                         RoleUpdateComboBox.SelectedItem = RoleUpdateComboBox.Items
                             .Cast<Role>()
-                            .FirstOrDefault(r => r.RoleId == role.RoleId); 
+                            .FirstOrDefault(r => r.RoleId == role.RoleId);
                     }
                 }
             }
@@ -317,23 +319,26 @@ namespace PRN212_PROJECT
                     Name = NameTextBox.Text,
                     Email = EmailTextBox.Text,
                     PhoneNumber = PhoneNumberTextBox.Text,
-                    Password = "12345678", 
+                    Password = "12345678",
                 };
 
                 var roleId = (RoleUpdateComboBox.SelectedItem as Role).RoleId;
+                context.Accounts.Add(account);
+                context.SaveChanges();
                 var accRole = new AccRole
                 {
                     AccountId = account.PhoneNumber,
                     RoleId = roleId,
-                    Address = AddressTextBox.Text
+                    Address = AddressTextBox.Text,
+                    Account = account,
+                    Role = context.Roles.FirstOrDefault(x => x.RoleId == roleId)
                 };
 
-                context.Accounts.Add(account);
+
                 context.AccRoles.Add(accRole);
                 context.SaveChanges();
 
                 LoadEmployeeData();
-                IdTextBox.Text = "";
                 NameTextBox.Text = "";
                 EmailTextBox.Text = "";
                 PhoneNumberTextBox.Text = "";
@@ -345,7 +350,7 @@ namespace PRN212_PROJECT
 
         private void DeleteEmployee_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(IdTextBox.Text))
+            if (string.IsNullOrWhiteSpace(PhoneNumberTextBox.Text))
             {
                 MessageBox.Show("Vui lòng chọn nhân viên để xóa!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -358,7 +363,7 @@ namespace PRN212_PROJECT
                 {
                     var account = context.AccRoles
                         .Include(a => a.Account)
-                        .FirstOrDefault(a => a.AccountId == IdTextBox.Text);
+                        .FirstOrDefault(a => a.AccountId == PhoneNumberTextBox.Text);
 
                     if (account == null)
                     {
@@ -371,7 +376,6 @@ namespace PRN212_PROJECT
                     context.SaveChanges();
 
                     LoadEmployeeData();
-                    IdTextBox.Text = "";
                     NameTextBox.Text = "";
                     EmailTextBox.Text = "";
                     PhoneNumberTextBox.Text = "";
@@ -384,7 +388,7 @@ namespace PRN212_PROJECT
 
         private void UpdateRole_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(IdTextBox.Text) || RoleUpdateComboBox.SelectedItem == null)
+            if (string.IsNullOrWhiteSpace(PhoneNumberTextBox.Text) || RoleUpdateComboBox.SelectedItem == null)
             {
                 MessageBox.Show("Vui lòng chọn nhân viên và vai trò để cập nhật!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -393,7 +397,7 @@ namespace PRN212_PROJECT
             using (var context = new Prn212ProjectBl5Context())
             {
                 var accRole = context.AccRoles
-                    .FirstOrDefault(ar => ar.AccountId == IdTextBox.Text);
+                    .FirstOrDefault(ar => ar.AccountId == PhoneNumberTextBox.Text);
 
                 if (accRole == null)
                 {
@@ -418,6 +422,222 @@ namespace PRN212_PROJECT
             AddressTextBox.Text = "";
             RoleUpdateComboBox.SelectedIndex = -1;
         }
+        private void LoadFood()
+        {
+            try
+            {
+                using (var context = new Prn212ProjectBl5Context())
+                {
+                    allFoodTypes = context.TypeFoods.ToList();
+                    allFoods = context.Foods.Include(f => f.Typef).ToList();
+                }
 
+                var allType = new TypeFood { TypefId = -1, Typename = "Hiển thị tất cả" };
+                allFoodTypes.Insert(0, allType);
+                FoodTypeFilterComboBox.ItemsSource = allFoodTypes;
+                FoodTypeFilterComboBox.DisplayMemberPath = "Typename";
+                FoodTypeFilterComboBox.SelectedValuePath = "TypefId";
+                FoodTypeFilterComboBox.SelectedIndex = 0;
+                FoodTypeComboBox.ItemsSource = allFoodTypes.Where(t => t.TypefId != -1).ToList();
+                FoodTypeComboBox.DisplayMemberPath = "Typename";
+                FoodTypeComboBox.SelectedValuePath = "TypefId";
+                FoodItemsControl.ItemsSource = allFoods;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải dữ liệu thực phẩm: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void ApplyFoodFilters()
+        {
+            if (allFoods == null)
+            {
+                MessageBox.Show("Không thể áp dụng, dữ liệu thực phẩm chưa được tải.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var selectedType = FoodTypeFilterComboBox.SelectedItem as TypeFood;
+            var searchText = FoodSearchBox.Text?.ToLower() ?? "";
+            var filtered = allFoods.AsEnumerable();
+            if (selectedType != null && selectedType.TypefId == -1)
+            {
+                filtered = allFoods;
+            }
+            else if (selectedType != null && selectedType.TypefId != -1)
+            {
+                filtered = filtered.Where(f => f.TypefId == selectedType.TypefId);
+            }
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                filtered = filtered.Where(f => f.FoodName.ToLower().Contains(searchText));
+            }
+            FoodItemsControl.ItemsSource = filtered.ToList();
+        }
+        private void FoodTypeFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ApplyFoodFilters();
+        }
+
+        private void FoodSearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyFoodFilters();
+        }
+        private void SelectFood_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is int foodId)
+            {
+                using (var context = new Prn212ProjectBl5Context())
+                {
+                    var food = context.Foods.Include(f => f.Typef).FirstOrDefault(f => f.FoodId == foodId);
+                    if (food != null)
+                    {
+                        FoodIdTextBox.Text = food.FoodId.ToString();
+                        FoodNameTextBox.Text = food.FoodName;
+                        FoodPriceTextBox.Text = food.Price.ToString();
+                        FoodImageTextBox.Text = food.Image;
+                        FoodTypeComboBox.SelectedItem = allFoodTypes.FirstOrDefault(t => t.TypefId == food.TypefId);
+                    }
+                }
+            }
+        }
+
+        private void AddFood_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(FoodNameTextBox.Text) || string.IsNullOrWhiteSpace(FoodPriceTextBox.Text) ||
+                string.IsNullOrWhiteSpace(FoodImageTextBox.Text) || FoodTypeComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Vui lòng điền đầy đủ thông tin!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (!int.TryParse(FoodPriceTextBox.Text, out int price))
+            {
+                MessageBox.Show("Giá phải là số nguyên!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            using (var context = new Prn212ProjectBl5Context())
+            {
+                var food = new Food
+                {
+                    FoodName = FoodNameTextBox.Text,
+                    TypefId = (FoodTypeComboBox.SelectedItem as TypeFood).TypefId,
+                    Price = price,
+                    Image = FoodImageTextBox.Text
+                };
+                context.Foods.Add(food);
+                context.SaveChanges();
+                allFoods = context.Foods.Include(f => f.Typef).ToList();
+                ApplyFoodFilters();
+                FoodIdTextBox.Text = "";
+                FoodNameTextBox.Text = "";
+                FoodPriceTextBox.Text = "";
+                FoodImageTextBox.Text = "";
+                FoodTypeComboBox.SelectedIndex = -1;
+                MessageBox.Show("Thêm thực phẩm thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        private void UpdateFood_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(FoodIdTextBox.Text))
+            {
+                MessageBox.Show("Vui lòng chọn thực phẩm để cập nhật!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(FoodIdTextBox.Text, out int foodId))
+            {
+                MessageBox.Show("ID thực phẩm không hợp lệ!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(FoodNameTextBox.Text) || string.IsNullOrWhiteSpace(FoodPriceTextBox.Text) ||
+                string.IsNullOrWhiteSpace(FoodImageTextBox.Text) || FoodTypeComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Vui lòng điền đầy đủ thông tin!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(FoodPriceTextBox.Text, out int price))
+            {
+                MessageBox.Show("Giá phải là số nguyên!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            using (var context = new Prn212ProjectBl5Context())
+            {
+                var food = context.Foods.Find(foodId);
+                if (food == null)
+                {
+                    MessageBox.Show("Thực phẩm không tồn tại!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                food.FoodName = FoodNameTextBox.Text;
+                food.TypefId = (FoodTypeComboBox.SelectedItem as TypeFood).TypefId;
+                food.Price = price;
+                food.Image = FoodImageTextBox.Text;
+
+                context.Foods.Update(food);
+                context.SaveChanges();
+
+                allFoods = context.Foods.Include(f => f.Typef).ToList();
+                ApplyFoodFilters();
+                MessageBox.Show("Cập nhật thực phẩm thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                FoodIdTextBox.Text = "";
+                FoodNameTextBox.Text = "";
+                FoodPriceTextBox.Text = "";
+                FoodImageTextBox.Text = "";
+                FoodTypeComboBox.SelectedIndex = -1;
+            }
+        }
+
+        private void DeleteFood_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(FoodIdTextBox.Text))
+            {
+                MessageBox.Show("Vui lòng chọn thực phẩm để xóa!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(FoodIdTextBox.Text, out int foodId))
+            {
+                MessageBox.Show("ID thực phẩm không hợp lệ!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var result = MessageBox.Show("Bạn có chắc chắn muốn xóa thực phẩm này?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                using (var context = new Prn212ProjectBl5Context())
+                {
+                    var food = context.Foods.Find(foodId);
+                    if (food == null)
+                    {
+                        MessageBox.Show("Thực phẩm không tồn tại!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    context.Foods.Remove(food);
+                    context.SaveChanges();
+
+                    allFoods = context.Foods.Include(f => f.Typef).ToList();
+                    ApplyFoodFilters();
+                    FoodIdTextBox.Text = "";
+                    FoodNameTextBox.Text = "";
+                    FoodPriceTextBox.Text = "";
+                    FoodImageTextBox.Text = "";
+                    FoodTypeComboBox.SelectedIndex = -1;
+                    MessageBox.Show("Xóa thực phẩm thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+        }
+
+        private void ResetFoodFields_Click(object sender, RoutedEventArgs e)
+        {
+            FoodIdTextBox.Text = "";
+            FoodNameTextBox.Text = "";
+            FoodPriceTextBox.Text = "";
+            FoodImageTextBox.Text = "";
+            FoodTypeComboBox.SelectedIndex = -1;
+        }
     }
 }

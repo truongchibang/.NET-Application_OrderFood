@@ -35,12 +35,15 @@ namespace PRN212_PROJECT
             LoadOrders();
             LoadOrdersShip();
             LoadOrdersFinish();
-            var context = new Prn212ProjectBl5Context();
-            var orders = context.Orders
-                    .Where(o => o.Status == 7 && o.AccountId == CurrentAccount.PhoneNumber).ToList();
-            if (orders != null)
+            using (var context = new Prn212ProjectBl5Context())
             {
-                MessageBox.Show("Đơn hàng của bạn đã đến, bạn vui lòng ra nhận hàng giúp shop ạ!");
+                var orders = context.Orders
+                    .Where(o => o.Status == 7 && o.AccountId == CurrentAccount.PhoneNumber)
+                    .ToList();
+                if (orders.Any())
+                {
+                    MessageBox.Show("Đơn hàng của bạn đã đến, bạn vui lòng ra nhận hàng giúp shop ạ!");
+                }
             }
         }
 
@@ -281,7 +284,7 @@ namespace PRN212_PROJECT
                 context.FoodCarts.RemoveRange(cartItems);
                 context.Carts.Remove(cart);
                 context.SaveChanges();
-
+                LoadOrders();
                 LoadCartItems();
                 MessageBox.Show("Đơn hàng đã được chốt thành công!");
             }

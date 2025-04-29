@@ -32,19 +32,19 @@ namespace PRN212_PROJECT
                 MessageBox.Show("Bạn hãy nhập đầy đủ thông tin");
                 return;
             }
-            if (pwdBoxConfirm != pwdBoxReg)
+            if (pwdBoxConfirm.Password != pwdBoxReg.Password)
             {
                 MessageBox.Show("Password không trùng với confirm,vui lòng nhập lại.");
                 return;
             }
-            if(pwdBoxReg.Password.Length<8|| pwdBoxReg.Password.Length > 16)
+            if (pwdBoxReg.Password.Length < 8 || pwdBoxReg.Password.Length > 16)
             {
                 MessageBox.Show("Bạn hãy nhập mật khẩu có độ dài 8-16 kí tự");
                 return;
             }
             using var context = new Prn212ProjectBl5Context();
             var accountT = context.Accounts.FirstOrDefault(x => x.PhoneNumber == txtPhone.Text);
-            if (txtPhone.Text == accountT.PhoneNumber)
+            if (accountT != null)
             {
                 MessageBox.Show("Bạn không thể dùng số điện thoại này vì nó đã có trong hệ thống.");
                 return;
@@ -53,16 +53,20 @@ namespace PRN212_PROJECT
             {
                 PhoneNumber = txtPhone.Text,
                 Email = txtEmailReg.Text,
-                Name = txtEmailReg.Text,
+                Name = txtUsernameReg.Text,
                 Password = pwdBoxReg.Password
             };
+            context.Accounts.Add(account);
+            context.SaveChanges();
             AccRole accRole = new AccRole
             {
                 AccountId = txtPhone.Text,
                 RoleId = 2,
-                Address = txtAddress.Text
+                Address = txtAddress.Text,
+                Account = account,
+                Role = context.Roles.FirstOrDefault(x=>x.RoleId ==2)
             };
-            context.Accounts.Add(account);
+
             context.AccRoles.Add(accRole);
             context.SaveChanges();
             MessageBox.Show("Tạo tài khoản thành công.");
